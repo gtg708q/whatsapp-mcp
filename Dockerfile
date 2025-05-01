@@ -1,9 +1,21 @@
-FROM golang:1.24-bookworm AS go-builder
+# Stage 1: Download and extract Go 1.24.2
+FROM debian:bookworm-slim AS go-downloader
+RUN apt-get update && apt-get install -y curl tar
+WORKDIR /tmp
+RUN curl -sSL https://go.dev/dl/go1.24.2.linux-amd64.tar.gz -o go.tar.gz && \
+    tar -C /usr/local -xzf go.tar.gz
+
+# Stage 2: Build Go binary
+FROM debian:bookworm-slim AS go-builder
+COPY --from=go-downloader /usr/local/go /usr/local/go
+ENV PATH="/usr/local/go/bin:${PATH}"
+RUN apt-get update && apt-get install -y git gcc
 
 WORKDIR /app
 COPY whatsapp-bridge/ .
 RUN CGO_ENABLED=1 go build -o whatsapp-bridge main.go
 
+# Stage 3: Final image
 FROM python:3.9-slim
 
 RUN apt-get update && apt-get install -y \
