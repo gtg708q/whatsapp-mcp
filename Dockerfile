@@ -1,4 +1,4 @@
-FROM golang:1.23 AS go-builder  # Use a newer Go version
+FROM golang:1.22 AS go-builder
 
 WORKDIR /app
 COPY whatsapp-bridge/ .
