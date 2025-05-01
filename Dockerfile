@@ -27,7 +27,7 @@ COPY whatsapp-mcp-server/ /app/whatsapp-mcp-server/
 RUN pip install --no-cache-dir -r /app/whatsapp-mcp-server/requirements.txt
 
 # Create a volume for persistent data storage
-VOLUME /app/data
+# VOLUME /app/data
 
 # Create a startup script
 RUN echo '#!/bin/bash\n\
