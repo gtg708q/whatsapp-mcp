@@ -24,14 +24,19 @@ RUN apt-get update && apt-get install -y \
     ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
+# Install uv for Python package management
+RUN pip install uv
+
 WORKDIR /app
 
 # Copy the Go bridge executable
 COPY --from=go-builder /app/whatsapp-bridge /app/whatsapp-bridge
 COPY whatsapp-mcp-server/ /app/whatsapp-mcp-server/
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r /app/whatsapp-mcp-server/requirements.txt
+# Install Python dependencies using pyproject.toml
+WORKDIR /app/whatsapp-mcp-server
+RUN uv pip install -e .
+WORKDIR /app
 
 # Create a startup script
 RUN echo '#!/bin/bash\n\
