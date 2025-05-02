@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y \
 
 # Install required Python packages directly
 RUN pip install --upgrade pip setuptools
-RUN pip install mcp fastapi uvicorn pydantic
+RUN pip install mcp fastapi uvicorn pydantic requests
 
 WORKDIR /app
 
