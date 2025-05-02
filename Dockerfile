@@ -24,19 +24,15 @@ RUN apt-get update && apt-get install -y \
     ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
-# Install pip and setuptools
+# Install required Python packages directly
 RUN pip install --upgrade pip setuptools
+RUN pip install mcp-server-sdk fastapi uvicorn pydantic
 
 WORKDIR /app
 
 # Copy the Go bridge executable
 COPY --from=go-builder /app/whatsapp-bridge /app/whatsapp-bridge
 COPY whatsapp-mcp-server/ /app/whatsapp-mcp-server/
-
-# Install Python dependencies using pip directly
-WORKDIR /app/whatsapp-mcp-server
-RUN pip install -e .
-WORKDIR /app
 
 # Create a startup script
 RUN echo '#!/bin/bash\n\
