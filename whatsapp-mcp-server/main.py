@@ -260,11 +260,32 @@ if __name__ == "__main__":
         
         app = FastAPI()
         
+        # Simple test endpoint
+        @app.get("/test")
+        async def test_endpoint():
+            return {"status": "ok", "message": "WhatsApp MCP Server is running"}
+        
         # Get all tool methods defined in this file
         tool_methods = {}
-        for name, obj in globals().items():
+        # Make a copy of globals() to avoid RuntimeError during iteration
+        global_items = list(globals().items())
+        for name, obj in global_items:
             if callable(obj) and hasattr(obj, '__wrapped__') and getattr(obj, '__mcp_tool__', False):
                 tool_methods[name] = obj
+        
+        # Debug endpoint to see which tools were found
+        @app.get("/debug/tools")
+        async def debug_tools():
+            found_tools = []
+            for name, obj in global_items:
+                if callable(obj):
+                    tool_info = {
+                        "name": name,
+                        "has_wrapped": hasattr(obj, '__wrapped__'),
+                        "is_mcp_tool": getattr(obj, '__mcp_tool__', False)
+                    }
+                    found_tools.append(tool_info)
+            return {"tools": found_tools}
         
         @app.post("/list_offerings")
         async def list_offerings():
