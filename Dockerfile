@@ -13,6 +13,8 @@ RUN apt-get update && apt-get install -y git gcc
 
 WORKDIR /app
 COPY whatsapp-bridge/ .
+# Run go mod tidy first to update dependencies
+RUN go mod tidy
 RUN CGO_ENABLED=1 go build -o whatsapp-bridge main.go
 
 # Stage 3: Final image
