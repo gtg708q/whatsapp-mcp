@@ -254,28 +254,76 @@ if __name__ == "__main__":
     if os.environ.get("RAILWAY_ENVIRONMENT"):
         # For Railway deployment with uvicorn
         import uvicorn
-        from fastapi import FastAPI
+        from fastapi import FastAPI, Request
+        from fastapi.responses import JSONResponse
+        import inspect
         
         app = FastAPI()
         
+        # Get all tool methods defined in this file
+        tool_methods = {}
+        for name, obj in globals().items():
+            if callable(obj) and hasattr(obj, '__wrapped__') and getattr(obj, '__mcp_tool__', False):
+                tool_methods[name] = obj
+        
         @app.post("/list_offerings")
         async def list_offerings():
-            return {"offerings": [tool.schema() for tool in mcp.tools.values()]}
+            tools_list = []
+            for name, method in tool_methods.items():
+                # Extract method signature and docstring
+                sig = inspect.signature(method)
+                doc = inspect.getdoc(method) or ""
+                
+                # Build schema
+                schema = {
+                    "name": name,
+                    "description": doc,
+                    "parameters": {
+                        "type": "object",
+                        "properties": {},
+                        "required": []
+                    }
+                }
+                
+                # Add parameters
+                for param_name, param in sig.parameters.items():
+                    if param_name != 'self':  # Skip self parameter
+                        param_type = "string"  # Default type
+                        required = param.default == inspect.Parameter.empty
+                        
+                        if required:
+                            schema["parameters"]["required"].append(param_name)
+                        
+                        schema["parameters"]["properties"][param_name] = {
+                            "type": param_type,
+                            "description": ""
+                        }
+                
+                tools_list.append(schema)
+            
+            return {"offerings": tools_list}
         
         @app.post("/execute")
-        async def execute(request_data: dict):
+        async def execute(request: Request):
+            request_data = await request.json()
             tool_name = request_data.get("name")
             params = request_data.get("parameters", {})
             
-            if tool_name in mcp.tools:
-                tool = mcp.tools[tool_name]
+            if tool_name in tool_methods:
+                tool = tool_methods[tool_name]
                 try:
                     result = tool(**params)
                     return {"result": result}
                 except Exception as e:
-                    return {"error": str(e)}
+                    return JSONResponse(
+                        status_code=500,
+                        content={"error": str(e)}
+                    )
             else:
-                return {"error": f"Tool {tool_name} not found"}
+                return JSONResponse(
+                    status_code=404,
+                    content={"error": f"Tool {tool_name} not found"}
+                )
         
         # Start the server
         host = "0.0.0.0"
