@@ -34,13 +34,18 @@ WORKDIR /app
 COPY --from=go-builder /app/whatsapp-bridge /app/whatsapp-bridge
 COPY whatsapp-mcp-server/ /app/whatsapp-mcp-server/
 
+# Set environment variables for MCP and FastAPI
+ENV RAILWAY_ENVIRONMENT=true
+ENV PORT=8080
+ENV MCP_HTTP_HOST=0.0.0.0
+ENV MCP_HTTP_PORT=8080
+
 # Create a startup script
 RUN echo '#!/bin/bash\n\
 mkdir -p /app/data/store\n\
 cd /app\n\
 ./whatsapp-bridge &\n\
 cd /app/whatsapp-mcp-server\n\
-export RAILWAY_ENVIRONMENT=true\n\
 python main.py\n\
 ' > /app/start.sh && chmod +x /app/start.sh
 

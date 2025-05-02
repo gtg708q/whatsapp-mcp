@@ -253,7 +253,7 @@ if __name__ == "__main__":
     # Use HTTP transport for Railway deployment, fall back to stdio for local development
     if os.environ.get("RAILWAY_ENVIRONMENT"):
         # For Railway deployment
-        mcp.run(transport='http', host="0.0.0.0", port=8080)
+        mcp.run(transport='http')
     else:
         # For local development
         mcp.run(transport='stdio')
