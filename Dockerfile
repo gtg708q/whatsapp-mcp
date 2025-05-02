@@ -18,7 +18,7 @@ RUN go mod tidy
 RUN CGO_ENABLED=1 go build -o whatsapp-bridge main.go
 
 # Stage 3: Final image
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 RUN apt-get update && apt-get install -y \
     ffmpeg \
@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y \
 
 # Install required Python packages directly
 RUN pip install --upgrade pip setuptools
-RUN pip install mcp-server-sdk fastapi uvicorn pydantic
+RUN pip install mcp fastapi uvicorn pydantic
 
 WORKDIR /app
 
