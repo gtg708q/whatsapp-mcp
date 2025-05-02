@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y \
 
 # Install required Python packages directly
 RUN pip install --upgrade pip setuptools
-RUN pip install "mcp>=1.6.0" "fastapi>=0.110.0" "uvicorn>=0.28.0" "pydantic>=2.0.0" "requests>=2.32.3" "httpx>=0.28.1" "python-multipart>=0.0.9" "sse-starlette>=1.6.1"
+RUN pip install "mcp>=1.6.0" "fastapi>=0.110.0" "uvicorn[standard]>=0.28.0" "pydantic>=2.0.0" "requests>=2.32.3" "httpx>=0.28.1" "python-multipart>=0.0.9"
 
 WORKDIR /app
 

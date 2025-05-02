@@ -252,9 +252,35 @@ if __name__ == "__main__":
     
     # Use HTTP transport for Railway deployment, fall back to stdio for local development
     if os.environ.get("RAILWAY_ENVIRONMENT"):
-        # For Railway deployment with FastAPI transport
-        from mcp.server.transport import FastAPITransport
-        mcp.run(transport=FastAPITransport(host="0.0.0.0", port=8080))
+        # For Railway deployment with uvicorn
+        import uvicorn
+        from fastapi import FastAPI
+        
+        app = FastAPI()
+        
+        @app.post("/list_offerings")
+        async def list_offerings():
+            return {"offerings": [tool.schema() for tool in mcp.tools.values()]}
+        
+        @app.post("/execute")
+        async def execute(request_data: dict):
+            tool_name = request_data.get("name")
+            params = request_data.get("parameters", {})
+            
+            if tool_name in mcp.tools:
+                tool = mcp.tools[tool_name]
+                try:
+                    result = tool(**params)
+                    return {"result": result}
+                except Exception as e:
+                    return {"error": str(e)}
+            else:
+                return {"error": f"Tool {tool_name} not found"}
+        
+        # Start the server
+        host = "0.0.0.0"
+        port = int(os.environ.get("PORT", 8080))
+        uvicorn.run(app, host=host, port=port)
     else:
         # For local development
         mcp.run(transport='stdio')
