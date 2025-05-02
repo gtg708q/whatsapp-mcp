@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y \
 
 # Install required Python packages directly
 RUN pip install --upgrade pip setuptools
-RUN pip install mcp fastapi uvicorn pydantic requests
+RUN pip install "mcp[cli,http]>=1.6.0" fastapi uvicorn pydantic requests
 
 WORKDIR /app
 
@@ -40,6 +40,7 @@ mkdir -p /app/data/store\n\
 cd /app\n\
 ./whatsapp-bridge &\n\
 cd /app/whatsapp-mcp-server\n\
+export RAILWAY_ENVIRONMENT=true\n\
 python main.py\n\
 ' > /app/start.sh && chmod +x /app/start.sh
 
