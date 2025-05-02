@@ -252,8 +252,9 @@ if __name__ == "__main__":
     
     # Use HTTP transport for Railway deployment, fall back to stdio for local development
     if os.environ.get("RAILWAY_ENVIRONMENT"):
-        # For Railway deployment
-        mcp.run(transport='http')
+        # For Railway deployment with FastAPI transport
+        from mcp.server.transport import FastAPITransport
+        mcp.run(transport=FastAPITransport(host="0.0.0.0", port=8080))
     else:
         # For local development
         mcp.run(transport='stdio')
