@@ -24,8 +24,8 @@ RUN apt-get update && apt-get install -y \
     ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
-# Install uv for Python package management
-RUN pip install uv
+# Install pip and setuptools
+RUN pip install --upgrade pip setuptools
 
 WORKDIR /app
 
@@ -33,9 +33,9 @@ WORKDIR /app
 COPY --from=go-builder /app/whatsapp-bridge /app/whatsapp-bridge
 COPY whatsapp-mcp-server/ /app/whatsapp-mcp-server/
 
-# Install Python dependencies using pyproject.toml
+# Install Python dependencies using pip directly
 WORKDIR /app/whatsapp-mcp-server
-RUN uv pip install -e .
+RUN pip install -e .
 WORKDIR /app
 
 # Create a startup script
