@@ -1,0 +1,48 @@
+{
+  "mcpServers": {
+    "MCP Installer": {
+      "command": "cursor-mcp-installer-free",
+      "type": "stdio",
+      "args": [
+        "index.mjs"
+      ]
+    },
+    "Mcp Web Search": {
+      "command": "npx",
+      "type": "stdio",
+      "args": [
+        "-y",
+        "mcp-web-search"
+      ]
+    },
+    "git": {
+      "command": "uv",
+      "type": "stdio",
+      "args": [
+        "--directory",
+        "/Users/derrekwiedeman/mcp-servers/src/git",
+        "run",
+        "mcp-server-git"
+      ]
+    },
+    "PostgreSQL": {
+      "command": "npx",
+      "type": "stdio",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://dev_user:dev_password@34.174.63.147:5432/leiluna_scm_dev"
+      ]
+    },
+    "whatsapp": {
+      "command": "/Users/derrekwiedeman/.local/bin/uv",
+      "type": "stdio",
+      "args": [
+        "--directory",
+        "/Users/derrekwiedeman/whatsappfork/whatsapp-mcp-server",
+        "run",
+        "main.py"
+      ]
+    }
+  }
+} 
